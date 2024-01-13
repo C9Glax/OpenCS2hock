@@ -33,12 +33,11 @@ public class GSIServer
             
             Console.WriteLine($"[{request.HttpMethod}] {request.Url} - {request.UserAgent}");
 
-            HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.Accepted);
+            HttpResponseMessage responseMessage = new (HttpStatusCode.Accepted);
             context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(responseMessage.ToString()));
 
-            StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding);
+            StreamReader reader = new (request.InputStream, request.ContentEncoding);
             string content = await reader.ReadToEndAsync();
-            Console.WriteLine(content);
             OnMessage?.Invoke(content);
         }
         HttpListener.Close();

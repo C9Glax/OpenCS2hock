@@ -61,7 +61,6 @@ public class OpenCS2hock
     {
         string fileName = Path.Combine(Environment.CurrentDirectory, "CS2Events" ,$"{DateTime.Now.ToLongTimeString().Replace(':','.')}.json");
         File.WriteAllText(fileName, content);
-        Console.WriteLine(fileName);
         _cs2MessageHandler.HandleCS2Message(content);
     }
 }
