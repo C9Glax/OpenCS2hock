@@ -4,6 +4,6 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        new OpenCS2hock();
+        OpenCS2hock openCS2Hock = new OpenCS2hock();
     }
 }
