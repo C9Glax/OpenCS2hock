@@ -59,7 +59,7 @@ public class OpenCS2hock
 
     private void OnGSIMessage(string content)
     {
-        string fileName = Path.Combine(Environment.CurrentDirectory, $"{DateTime.Now.ToLongTimeString().Replace(':','.')}.json");
+        string fileName = Path.Combine(Environment.CurrentDirectory, "CS2Events" ,$"{DateTime.Now.ToLongTimeString().Replace(':','.')}.json");
         File.WriteAllText(fileName, content);
         Console.WriteLine(fileName);
         _cs2MessageHandler.HandleCS2Message(content);
