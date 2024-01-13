@@ -13,6 +13,16 @@ public static class Installer
           
           return JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsFilePath));
      }
+
+     public static List<Shocker> GetShockers(Settings settings)
+     {
+          List<Shocker> shockers = new();
+          shockers.Add(new OpenShock(settings.OpenShockSettings.Endpoint, settings.OpenShockSettings.ApiKey,
+               settings.OpenShockSettings.Shockers,
+               new ConfiguredInteger(settings.IntensityRange.Min, settings.IntensityRange.Max),
+               new ConfiguredInteger(settings.DurationRange.Min, settings.DurationRange.Max)));
+          return shockers;
+     }
      
      public static void InstallGsi()
      {

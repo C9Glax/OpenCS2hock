@@ -9,9 +9,6 @@ public struct Settings
         Shockers = Array.Empty<string>()
     };
 
-    public short FixedIntensity = 30;
-    public short FixedDuration = 1000;
-
     public Range IntensityRange = new ()
     {
         Min = 0,
@@ -24,22 +21,22 @@ public struct Settings
         Max = 2000
     };
 
-    public Actions Actions = new()
+    public Dictionary<string, string> Actions = new()
     {
-        OnKill = "Nothing",
-        OnDeath = "Shock",
-        OnRoundStart = "Vibrate",
-        OnRoundEnd = "Nothing",
-        OnRoundWin = "Beep",
-        OnRoundLoss = "Nothing"
+        {"OnKill", "Nothing"},
+        {"OnDeath", "Shock"},
+        {"OnRoundStart", "Vibrate"},
+        {"OnRoundEnd", "Nothing"},
+        {"OnRoundWin", "Beep"},
+        {"OnRoundLoss", "Nothing"}
     };
 
     public Settings()
     {
         
     }
-
-    internal Shocker.ControlAction StringToAction(string str)
+    
+    public static Shocker.ControlAction StringToAction(string str)
     {
         return str.ToLower() switch
         {
@@ -60,9 +57,4 @@ public struct OpenShockSettings
 public struct Range
 {
     public short Min, Max;
-}
-
-public struct Actions
-{
-    public string OnKill, OnDeath, OnRoundStart, OnRoundEnd, OnRoundWin, OnRoundLoss;
 }
