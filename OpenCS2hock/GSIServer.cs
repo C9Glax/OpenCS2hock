@@ -16,7 +16,7 @@ public class GSIServer
     public GSIServer(int port)
     {
         HttpListener = new HttpListener();
-        HttpListener.Prefixes.Add($"http://127.0.0.1:{port}");
+        HttpListener.Prefixes.Add($"http://127.0.0.1:{port}/");
         HttpListener.Start();
 
         Task connectionListener = HandleConnection();
