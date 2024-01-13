@@ -7,7 +7,7 @@ public abstract class Shocker
     protected readonly string Endpoint;
     protected string[] ShockerIds;
 
-    public enum ControlAction { Beep, Vibrate, Shock }
+    public enum ControlAction { Beep, Vibrate, Shock, Nothing }
 
     public abstract void Control(ControlAction action, byte intensity, short duration, string? shockerId = null);
 

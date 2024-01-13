@@ -1,9 +1,19 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 
 namespace OpenCS2hock;
 
 public static class Installer
 {
+     public static Settings GetSettings(string? path = null)
+     {
+          string settingsFilePath = path ?? "config.json";
+          if (!File.Exists(settingsFilePath))
+               File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(new Settings(), Formatting.Indented));
+          
+          return JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsFilePath));
+     }
+     
      public static void InstallGsi()
      {
           string installLocation = Path.Combine(GetInstallDirectory(), "game\\csgo\\cfg\\gamestate_integration_opencs2hock.cfg");

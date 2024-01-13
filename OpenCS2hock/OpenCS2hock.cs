@@ -4,9 +4,11 @@ public class OpenCS2hock
 {
     private GSIServer GSIServer { get; init; }
     private List<Shocker> _shockers = new();
+    private readonly Settings _settings;
 
-    public OpenCS2hock()
+    public OpenCS2hock(string? settingsPath = null)
     {
+        _settings = Installer.GetSettings(settingsPath);
         Installer.InstallGsi();
         this.GSIServer = new GSIServer(3000);
         this.GSIServer.OnMessage += OnGSIMessage;
