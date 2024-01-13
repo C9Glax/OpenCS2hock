@@ -12,13 +12,13 @@ public struct Settings
     public Range IntensityRange = new ()
     {
         Min = 0,
-        Max = 100
+        Max = 50
     };
 
     public Range DurationRange = new()
     {
         Min = 1000,
-        Max = 2000
+        Max = 1000
     };
 
     public Dictionary<string, string> Actions = new()
