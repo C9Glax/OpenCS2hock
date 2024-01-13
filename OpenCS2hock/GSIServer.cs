@@ -6,12 +6,11 @@ namespace OpenCS2hock;
 public class GSIServer
 {
     private HttpListener HttpListener { get; init; }
-
     public delegate void OnMessageEventHandler(string content);
-
     public event OnMessageEventHandler? OnMessage;
 
-    private bool keepRunning = true;
+    private bool _keepRunning = true;
+    public bool IsRunning { get; private set; }
 
     public GSIServer(int port)
     {
@@ -19,15 +18,13 @@ public class GSIServer
         HttpListener.Prefixes.Add($"http://127.0.0.1:{port}/");
         HttpListener.Start();
 
-        Task connectionListener = HandleConnection();
-        connectionListener.GetAwaiter().GetResult();
-        
-        HttpListener.Close();
+        Thread connectionListener = new (HandleConnection);
+        connectionListener.Start();
     }
 
-    private async Task HandleConnection()
+    private async void HandleConnection()
     {
-        while (keepRunning)
+        while (_keepRunning)
         {
             HttpListenerContext context = await HttpListener.GetContextAsync();
             HttpListenerRequest request = context.Request;
@@ -36,17 +33,18 @@ public class GSIServer
 
             HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.Accepted);
             context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(responseMessage.ToString()));
-            await context.Response.OutputStream.DisposeAsync();
 
-            StreamReader reader = new StreamReader(request.InputStream);
-            OnMessage?.Invoke(await reader.ReadToEndAsync());
-            reader.Close();
-            await request.InputStream.DisposeAsync();
+            StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding);
+            string content = await reader.ReadToEndAsync();
+            Console.WriteLine(content);
+            OnMessage?.Invoke(content);
         }
+        HttpListener.Close();
+        IsRunning = false;
     }
 
     internal void Dispose()
     {
-        keepRunning = false;
+        _keepRunning = false;
     }
 }
