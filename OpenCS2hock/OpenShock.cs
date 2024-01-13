@@ -4,16 +4,7 @@ namespace OpenCS2hock;
 
 public class OpenShock : Shocker
 {
-    public override void Control(ControlAction action, string? shockerId = null)
-    {
-        if(shockerId is null)
-            foreach(string shocker in ShockerIds)
-                SendRequestMessage(action, shocker);
-        else
-            SendRequestMessage(action, shockerId);
-    }
-
-    private void SendRequestMessage(ControlAction action, string shockerId)
+    protected override void ControlInternal(ControlAction action, string shockerId, int intensity, int duration)
     {
         HttpRequestMessage request = new (HttpMethod.Post, $"{Endpoint}/1/shockers/control")
         {
@@ -26,8 +17,8 @@ public class OpenShock : Shocker
             Content = new StringContent(@"[ { "+
                                         $"\"id\": \"{shockerId}\"," +
                                         $"\"type\": {ControlActionToByte(action)},"+
-                                        $"\"intensity\": {Intensity.GetValue()},"+
-                                        $"\"duration\": {Duration.GetValue()}"+
+                                        $"\"intensity\": {intensity},"+
+                                        $"\"duration\": {duration}"+
                                         "}]")
         };
         this.HttpClient.Send(request);
