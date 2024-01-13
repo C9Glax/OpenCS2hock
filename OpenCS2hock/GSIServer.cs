@@ -20,6 +20,8 @@ public class GSIServer
 
         Thread connectionListener = new (HandleConnection);
         connectionListener.Start();
+
+        IsRunning = true;
     }
 
     private async void HandleConnection()
