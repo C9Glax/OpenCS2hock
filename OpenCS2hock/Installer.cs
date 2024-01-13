@@ -4,7 +4,13 @@ namespace OpenCS2hock;
 
 public static class Installer
 {
-     public static string? GetInstallDirectory(int appId = 730)
+     public static void InstallGsi()
+     {
+          string installLocation = Path.Combine(GetInstallDirectory(), "game\\csgo\\cfg\\gamestate_integration_opencs2hock.cfg");
+          File.WriteAllText(installLocation, Resources.GSI_CFG_Content);
+     }
+     
+     public static string GetInstallDirectory(int appId = 730)
      {
           string steamInstallation =
 #pragma warning disable CA1416 //Registry only available on Windows
@@ -29,4 +35,5 @@ public static class Installer
           
           return installationPath;
      }
+
 }
