@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text;
 
 namespace OpenCS2hock;
 
@@ -11,17 +12,18 @@ public class OpenShock : Shocker
             Headers =
             {
                 UserAgent = { new ProductInfoHeaderValue("OpenCS2hock", "1") },
-                Accept = { new MediaTypeWithQualityHeaderValue("application/json") },
-                Authorization = new AuthenticationHeaderValue("Basic", ApiKey)
+                Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
             },
             Content = new StringContent(@"[ { "+
                                         $"\"id\": \"{shockerId}\"," +
                                         $"\"type\": {ControlActionToByte(action)},"+
                                         $"\"intensity\": {intensity},"+
                                         $"\"duration\": {duration}"+
-                                        "}]")
+                                        "}]", Encoding.UTF8, new MediaTypeHeaderValue("application/json"))
         };
-        this.HttpClient.Send(request);
+        request.Headers.Add("OpenShockToken", ApiKey);
+        HttpResponseMessage response = this.HttpClient.Send(request);
+        Console.WriteLine(response.StatusCode);
     }
 
     private byte ControlActionToByte(ControlAction action)
