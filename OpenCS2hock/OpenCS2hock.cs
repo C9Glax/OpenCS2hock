@@ -11,9 +11,11 @@ public class OpenCS2hock
     {
         _settings = Installer.GetSettings(settingsPath);
         this._shockers = Installer.GetShockers(_settings);
+        Console.WriteLine(_settings);
         Installer.InstallGsi();
         
         this._cs2MessageHandler = new CS2MessageHandler();
+        this.SetupEventHandlers();
         
         this.GSIServer = new GSIServer(3000);
         this.GSIServer.OnMessage += OnGSIMessage;
