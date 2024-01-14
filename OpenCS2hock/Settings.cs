@@ -1,4 +1,6 @@
-﻿namespace OpenCS2hock;
+﻿using Newtonsoft.Json;
+
+namespace OpenCS2hock;
 
 public struct Settings
 {
@@ -35,7 +37,12 @@ public struct Settings
     {
         
     }
-    
+
+    public override string ToString()
+    {
+        return JsonConvert.SerializeObject(this, Formatting.Indented);
+    }
+
     public static Shocker.ControlAction StringToAction(string str)
     {
         return str.ToLower() switch
