@@ -11,21 +11,14 @@ public abstract class Shocker
 
     public void Control(ControlAction action, string? shockerId = null)
     {
+        int intensity = _intensity.GetValue();
+        int duration = _duration.GetValue();
+        Console.WriteLine($"{action} {intensity} {duration}");
         if(shockerId is null)
             foreach (string shocker in _shockerIds)
-            {
-                int intensity = _intensity.GetValue();
-                int duration = _duration.GetValue();
                 ControlInternal(action, shocker, intensity, duration);
-                Console.WriteLine($"{shocker} {action} {intensity} {duration}");
-            }
         else
-        {
-            int intensity = _intensity.GetValue();
-            int duration = _duration.GetValue();
             ControlInternal(action, shockerId, intensity, duration);
-            Console.WriteLine($"{shockerId} {action} {intensity} {duration}");
-        }
     }
 
     protected abstract void ControlInternal(ControlAction action, string shockerId, int intensity, int duration);
