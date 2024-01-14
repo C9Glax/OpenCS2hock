@@ -12,9 +12,15 @@ public class CS2MessageHandler
     public event CS2EventHandler? OnRoundWin;
     public event CS2EventHandler? OnRoundLoss;
 
-    public void HandleCS2Message(string message)
+    public void HandleCS2Message(string message, string mySteamId)
     {
         JObject messageJson = JObject.Parse(message);
+        string? steamId = messageJson.SelectToken("player.steamid", false)?.Value<string>();
+        if (steamId is null || steamId != mySteamId)
+        {
+            Console.WriteLine("Not my steamid");
+            return;
+        }
         
         RoundState currentRoundState = ParseRoundStateFromString(messageJson.SelectToken("round.phase", false)?.Value<string>());
         RoundState previousRoundState = ParseRoundStateFromString(messageJson.SelectToken("previously.round.phase", false)?.Value<string>());

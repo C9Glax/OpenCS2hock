@@ -64,6 +64,6 @@ public class OpenCS2hock
         Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "CS2Events"));
         string fileName = Path.Combine(Environment.CurrentDirectory, "CS2Events" ,$"{DateTime.Now.ToLongTimeString().Replace(':','.')}.json");
         File.WriteAllText(fileName, content);
-        _cs2MessageHandler.HandleCS2Message(content);
+        _cs2MessageHandler.HandleCS2Message(content, _settings.SteamId);
     }
 }

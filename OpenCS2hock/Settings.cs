@@ -4,6 +4,7 @@ namespace OpenCS2hock;
 
 public struct Settings
 {
+    public string SteamId = "";
     public OpenShockSettings OpenShockSettings = new()
     {
         Endpoint = "https://api.shocklink.net",
