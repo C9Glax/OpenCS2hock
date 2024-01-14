@@ -14,8 +14,8 @@ public struct Settings
 
     public Range IntensityRange = new ()
     {
-        Min = 0,
-        Max = 50
+        Min = 20,
+        Max = 60
     };
 
     public Range DurationRange = new()
