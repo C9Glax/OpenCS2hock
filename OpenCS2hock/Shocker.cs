@@ -14,6 +14,8 @@ public abstract class Shocker
         int intensity = _intensity.GetValue();
         int duration = _duration.GetValue();
         Console.WriteLine($"{action} {intensity} {duration}");
+        if (action is ControlAction.Nothing)
+            return;
         if(shockerId is null)
             foreach (string shocker in _shockerIds)
                 ControlInternal(action, shocker, intensity, duration);
