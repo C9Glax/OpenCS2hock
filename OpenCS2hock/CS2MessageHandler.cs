@@ -15,30 +15,28 @@ public class CS2MessageHandler
     public void HandleCS2Message(string message)
     {
         JObject messageJson = JObject.Parse(message);
-
-        JToken? previously = messageJson.GetValue("previously");
         
-        RoundState currentRoundState = ParseRoundStateFromString(messageJson["round"]?.Value<string>("phase"));
-        RoundState previousRoundState = ParseRoundStateFromString(previously?["round"]?.Value<string>("phase"));
+        RoundState currentRoundState = ParseRoundStateFromString(messageJson.SelectToken("round.phase", false)?.Value<string>());
+        RoundState previousRoundState = ParseRoundStateFromString(messageJson.SelectToken("previously.round.phase", false)?.Value<string>());
         if(previousRoundState == RoundState.FreezeTime && currentRoundState == RoundState.Live)
             OnRoundStart?.Invoke();
         if(previousRoundState == RoundState.Live && currentRoundState == RoundState.FreezeTime)
             OnRoundEnd?.Invoke();
             
-        Team playerTeam = ParseTeamFromString(messageJson["player"]?.Value<string>("team"));
-        Team winnerTeam = ParseTeamFromString(messageJson["round"]?.Value<string>("win_team"));
+        Team playerTeam = ParseTeamFromString(messageJson.SelectToken("player.team", false)?.Value<string>());
+        Team winnerTeam = ParseTeamFromString(messageJson.SelectToken("round.win_team", false)?.Value<string>());
         if(winnerTeam != Team.None && playerTeam == winnerTeam)
             OnRoundWin?.Invoke();
         else if(winnerTeam != Team.None && playerTeam != winnerTeam)
             OnRoundLoss?.Invoke();
 
-        int? previousDeaths = previously?["player"]?["match_stats"]?.Value<int>("deaths");
-        int? currentDeaths = messageJson["player"]?["match_stats"]?.Value<int>("deaths");
+        int? previousDeaths = messageJson.SelectToken("previously.player.match_stats.deaths", false)?.Value<int>();
+        int? currentDeaths = messageJson.SelectToken("player.match_stats.deaths", false)?.Value<int>();
         if(currentDeaths > previousDeaths)
             OnDeath?.Invoke();
         
-        int? previousKills = previously?["player"]?["match_stats"]?.Value<int>("kills");
-        int? currentKills = messageJson["player"]?["match_stats"]?.Value<int>("kills");
+        int? previousKills = messageJson.SelectToken("previously.player.match_stats.kills", false)?.Value<int>();
+        int? currentKills = messageJson.SelectToken("player.match_stats.kills", false)?.Value<int>();
         if(currentKills > previousKills)
             OnKill?.Invoke();
     }
