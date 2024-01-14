@@ -44,7 +44,7 @@ public struct Settings
         return JsonConvert.SerializeObject(this, Formatting.Indented);
     }
 
-    public static Shocker.ControlAction StringToAction(string str)
+    internal static Shocker.ControlAction StringToAction(string str)
     {
         return str.ToLower() switch
         {

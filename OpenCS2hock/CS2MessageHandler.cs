@@ -2,17 +2,17 @@
 
 namespace OpenCS2hock;
 
-public class CS2MessageHandler
+internal class CS2MessageHandler
 {
-    public delegate void CS2EventHandler();
-    public event CS2EventHandler? OnKill;
-    public event CS2EventHandler? OnDeath;
-    public event CS2EventHandler? OnRoundStart;
-    public event CS2EventHandler? OnRoundEnd;
-    public event CS2EventHandler? OnRoundWin;
-    public event CS2EventHandler? OnRoundLoss;
+    internal delegate void CS2EventHandler();
+    internal event CS2EventHandler? OnKill;
+    internal event CS2EventHandler? OnDeath;
+    internal event CS2EventHandler? OnRoundStart;
+    internal event CS2EventHandler? OnRoundEnd;
+    internal event CS2EventHandler? OnRoundWin;
+    internal event CS2EventHandler? OnRoundLoss;
 
-    public void HandleCS2Message(string message, string mySteamId)
+    internal void HandleCS2Message(string message, string mySteamId)
     {
         JObject messageJson = JObject.Parse(message);
         string? steamId = messageJson.SelectToken("player.steamid", false)?.Value<string>();

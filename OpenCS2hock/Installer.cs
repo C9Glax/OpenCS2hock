@@ -5,7 +5,7 @@ namespace OpenCS2hock;
 
 public static class Installer
 {
-     public static Settings GetSettings(string? path = null)
+     internal static Settings GetSettings(string? path = null)
      {
           string settingsFilePath = path ?? "config.json";
           if (!File.Exists(settingsFilePath))
@@ -14,7 +14,7 @@ public static class Installer
           return JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsFilePath));
      }
 
-     public static List<Shocker> GetShockers(Settings settings)
+     internal static List<Shocker> GetShockers(Settings settings)
      {
           List<Shocker> shockers = new();
           shockers.Add(new OpenShock(settings.OpenShockSettings.Endpoint, settings.OpenShockSettings.ApiKey,
@@ -24,13 +24,13 @@ public static class Installer
           return shockers;
      }
      
-     public static void InstallGsi()
+     internal static void InstallGsi()
      {
           string installLocation = Path.Combine(GetInstallDirectory(), "game\\csgo\\cfg\\gamestate_integration_opencs2hock.cfg");
           File.WriteAllText(installLocation, Resources.GSI_CFG_Content);
      }
-     
-     public static string GetInstallDirectory(int appId = 730)
+
+     private static string GetInstallDirectory(int appId = 730)
      {
           string steamInstallation =
 #pragma warning disable CA1416 //Registry only available on Windows

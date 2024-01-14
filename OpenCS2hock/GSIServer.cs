@@ -3,16 +3,16 @@ using System.Text;
 
 namespace OpenCS2hock;
 
-public class GSIServer
+internal class GSIServer
 {
     private HttpListener HttpListener { get; init; }
-    public delegate void OnMessageEventHandler(string content);
-    public event OnMessageEventHandler? OnMessage;
+    internal delegate void OnMessageEventHandler(string content);
+    internal event OnMessageEventHandler? OnMessage;
 
     private bool _keepRunning = true;
-    public bool IsRunning { get; private set; }
+    internal bool IsRunning { get; private set; }
 
-    public GSIServer(int port)
+    internal GSIServer(int port)
     {
         HttpListener = new HttpListener();
         HttpListener.Prefixes.Add($"http://127.0.0.1:{port}/");

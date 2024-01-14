@@ -1,15 +1,15 @@
 ﻿namespace OpenCS2hock;
 
-public abstract class Shocker
+internal abstract class Shocker
 {
     protected readonly HttpClient HttpClient;
     protected readonly string ApiKey,Endpoint;
     private readonly string[] _shockerIds;
     private readonly ConfiguredInteger _intensity, _duration;
 
-    public enum ControlAction { Beep, Vibrate, Shock, Nothing }
+    internal enum ControlAction { Beep, Vibrate, Shock, Nothing }
 
-    public void Control(ControlAction action, string? shockerId = null)
+    internal void Control(ControlAction action, string? shockerId = null)
     {
         int intensity = _intensity.GetValue();
         int duration = _duration.GetValue();

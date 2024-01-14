@@ -3,7 +3,7 @@ using System.Text;
 
 namespace OpenCS2hock;
 
-public class OpenShock : Shocker
+internal class OpenShock : Shocker
 {
     protected override void ControlInternal(ControlAction action, string shockerId, int intensity, int duration)
     {
@@ -23,7 +23,7 @@ public class OpenShock : Shocker
         };
         request.Headers.Add("OpenShockToken", ApiKey);
         HttpResponseMessage response = this.HttpClient.Send(request);
-        Console.WriteLine(response.StatusCode);
+        Console.WriteLine($"{request.RequestUri} response: {response.StatusCode}");
     }
 
     private byte ControlActionToByte(ControlAction action)
@@ -37,7 +37,7 @@ public class OpenShock : Shocker
         };
     }
 
-    public OpenShock(string endpoint, string apiKey, string[] shockerIds, ConfiguredInteger intensity, ConfiguredInteger duration) : base(endpoint, apiKey, shockerIds, intensity, duration)
+    internal OpenShock(string endpoint, string apiKey, string[] shockerIds, ConfiguredInteger intensity, ConfiguredInteger duration) : base(endpoint, apiKey, shockerIds, intensity, duration)
     {
         
     }
