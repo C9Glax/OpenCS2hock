@@ -18,9 +18,11 @@ public class CS2MessageHandler
         
         RoundState currentRoundState = ParseRoundStateFromString(messageJson.SelectToken("round.phase", false)?.Value<string>());
         RoundState previousRoundState = ParseRoundStateFromString(messageJson.SelectToken("previously.round.phase", false)?.Value<string>());
-        if(previousRoundState == RoundState.FreezeTime && currentRoundState == RoundState.Live)
+        if(previousRoundState == RoundState.Over && currentRoundState == RoundState.Live)
             OnRoundStart?.Invoke();
         if(previousRoundState == RoundState.Live && currentRoundState == RoundState.FreezeTime)
+            OnRoundEnd?.Invoke();
+        if(previousRoundState == RoundState.Live && currentRoundState == RoundState.Over)
             OnRoundEnd?.Invoke();
             
         Team playerTeam = ParseTeamFromString(messageJson.SelectToken("player.team", false)?.Value<string>());
@@ -47,6 +49,7 @@ public class CS2MessageHandler
         {
             "live" => RoundState.Live,
             "freezetime" => RoundState.FreezeTime,
+            "over" => RoundState.Over,
             _ => RoundState.Unknown
         };
     }
@@ -61,7 +64,7 @@ public class CS2MessageHandler
         };
     }
     
-    private enum RoundState {FreezeTime, Live, Unknown}
+    private enum RoundState {FreezeTime, Live, Over, Unknown}
     
     private enum Team {T, CT, None}
 }
