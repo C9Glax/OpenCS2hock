@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace OpenCS2hock;
 
@@ -23,7 +24,7 @@ internal class OpenShock : Shocker
         };
         request.Headers.Add("OpenShockToken", ApiKey);
         HttpResponseMessage response = this.HttpClient.Send(request);
-        Console.WriteLine($"{request.RequestUri} response: {response.StatusCode}");
+        this.Logger?.Log(LogLevel.Debug, $"{request.RequestUri} response: {response.StatusCode}");
     }
 
     private byte ControlActionToByte(ControlAction action)
@@ -37,7 +38,7 @@ internal class OpenShock : Shocker
         };
     }
 
-    internal OpenShock(string endpoint, string apiKey, string[] shockerIds, ConfiguredInteger intensity, ConfiguredInteger duration) : base(endpoint, apiKey, shockerIds, intensity, duration)
+    internal OpenShock(string endpoint, string apiKey, string[] shockerIds, ConfiguredInteger intensity, ConfiguredInteger duration, Logger? logger = null) : base(endpoint, apiKey, shockerIds, intensity, duration, logger)
     {
         
     }

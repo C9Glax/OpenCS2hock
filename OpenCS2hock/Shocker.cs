@@ -1,4 +1,6 @@
-﻿namespace OpenCS2hock;
+﻿using Microsoft.Extensions.Logging;
+
+namespace OpenCS2hock;
 
 internal abstract class Shocker
 {
@@ -6,6 +8,7 @@ internal abstract class Shocker
     protected readonly string ApiKey,Endpoint;
     private readonly string[] _shockerIds;
     private readonly ConfiguredInteger _intensity, _duration;
+    protected readonly Logger? Logger;
 
     internal enum ControlAction { Beep, Vibrate, Shock, Nothing }
 
@@ -13,7 +16,7 @@ internal abstract class Shocker
     {
         int intensity = _intensity.GetValue();
         int duration = _duration.GetValue();
-        Console.WriteLine($"{action} {intensity} {duration}");
+        this.Logger?.Log(LogLevel.Information, $"{action} {intensity} {duration}");
         if (action is ControlAction.Nothing)
             return;
         if(shockerId is null)
@@ -25,7 +28,7 @@ internal abstract class Shocker
 
     protected abstract void ControlInternal(ControlAction action, string shockerId, int intensity, int duration);
 
-    protected Shocker(string endpoint, string apiKey, string[] shockerIds, ConfiguredInteger intensity, ConfiguredInteger duration)
+    protected Shocker(string endpoint, string apiKey, string[] shockerIds, ConfiguredInteger intensity, ConfiguredInteger duration, Logger? logger = null)
     {
         this.Endpoint = endpoint;
         this.ApiKey = apiKey;
@@ -33,5 +36,6 @@ internal abstract class Shocker
         this._shockerIds = shockerIds;
         this._intensity = intensity;
         this._duration = duration;
+        this.Logger = logger;
     }
 }

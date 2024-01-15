@@ -1,35 +1,34 @@
-﻿namespace OpenCS2hock;
+﻿using Microsoft.Extensions.Logging;
+
+namespace OpenCS2hock;
 
 public class OpenCS2hock
 {
-    private GSIServer GSIServer { get; init; }
-    private readonly CS2MessageHandler _cs2MessageHandler;
+    private readonly CS2GSI.CS2GSI _cs2GSI;
     private readonly List<Shocker> _shockers;
     private readonly Settings _settings;
+    private readonly Logger? _logger;
 
-    public OpenCS2hock(string? settingsPath = null)
+    public OpenCS2hock(string? settingsPath = null, Logger? logger = null)
     {
+        this._logger = logger;
+        this._logger?.Log(LogLevel.Information, "Starting OpenCS2hock...");
+        this._logger?.Log(LogLevel.Information, "Loading Settings...");
         _settings = Installer.GetSettings(settingsPath);
-        this._shockers = Installer.GetShockers(_settings);
-        Console.WriteLine(_settings);
-        Installer.InstallGsi();
-        
-        this._cs2MessageHandler = new CS2MessageHandler();
+        this._logger?.Log(LogLevel.Information, $"Loglevel set to {_settings.LogLevel}");
+        this._logger?.UpdateLogLevel(_settings.LogLevel);
+        this._logger?.Log(LogLevel.Information, _settings.ToString());
+        this._logger?.Log(LogLevel.Information, "Setting up Shockers...");
+        this._shockers = Installer.GetShockers(_settings, logger);
+        this._cs2GSI = new CS2GSI.CS2GSI(_logger);
         this.SetupEventHandlers();
-        
-        this.GSIServer = new GSIServer(3000);
-        this.GSIServer.OnMessage += OnGSIMessage;
-
-        Thread runningThread = new(() =>
-        {
-            while (GSIServer.IsRunning)
-                Thread.Sleep(10);
-        });
-        runningThread.Start();
+        while(this._cs2GSI.IsRunning)
+            Thread.Sleep(10);
     }
 
     private void SetupEventHandlers()
     {
+        this._logger?.Log(LogLevel.Information, "Setting up EventHandlers...");
         foreach (Shocker shocker in this._shockers)
         {
             foreach (KeyValuePair<string, string> kv in _settings.Actions)
@@ -37,33 +36,25 @@ public class OpenCS2hock
                 switch (kv.Key)
                 {
                     case "OnKill":
-                        this._cs2MessageHandler.OnKill += () => shocker.Control(Settings.StringToAction(kv.Value));
+                        this._cs2GSI.OnKill += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
                     case "OnDeath":
-                        this._cs2MessageHandler.OnDeath += () => shocker.Control(Settings.StringToAction(kv.Value));
+                        this._cs2GSI.OnDeath += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
                     case "OnRoundStart":
-                        this._cs2MessageHandler.OnRoundStart += () => shocker.Control(Settings.StringToAction(kv.Value));
+                        this._cs2GSI.OnRoundStart += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
                     case "OnRoundEnd":
-                        this._cs2MessageHandler.OnRoundEnd += () => shocker.Control(Settings.StringToAction(kv.Value));
+                        this._cs2GSI.OnRoundOver += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
                     case "OnRoundLoss":
-                        this._cs2MessageHandler.OnRoundLoss += () => shocker.Control(Settings.StringToAction(kv.Value));
+                        this._cs2GSI.OnRoundLoss += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
                     case "OnRoundWin":
-                        this._cs2MessageHandler.OnRoundWin += () => shocker.Control(Settings.StringToAction(kv.Value));
+                        this._cs2GSI.OnRoundWin += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
                 }
             }
         }
-    }
-
-    private void OnGSIMessage(string content)
-    {
-        Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "CS2Events"));
-        string fileName = Path.Combine(Environment.CurrentDirectory, "CS2Events" ,$"{DateTime.Now.ToLongTimeString().Replace(':','.')}.json");
-        File.WriteAllText(fileName, content);
-        _cs2MessageHandler.HandleCS2Message(content, _settings.SteamId);
     }
 }

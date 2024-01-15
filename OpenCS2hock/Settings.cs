@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace OpenCS2hock;
 
 public struct Settings
 {
-    public string SteamId = "";
+    public LogLevel LogLevel = LogLevel.Information;
     public OpenShockSettings OpenShockSettings = new()
     {
         Endpoint = "https://api.shocklink.net",
