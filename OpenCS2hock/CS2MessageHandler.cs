@@ -29,24 +29,20 @@ internal class CS2MessageHandler
             
         Team playerTeam = ParseTeamFromString(messageJson.SelectToken("player.team", false)?.Value<string>());
         Team winnerTeam = ParseTeamFromString(messageJson.SelectToken("round.win_team", false)?.Value<string>());
-        if(winnerTeam != Team.None && playerTeam == winnerTeam)
+        if(winnerTeam != Team.None && playerTeam != Team.None && playerTeam == winnerTeam)
             OnRoundWin?.Invoke();
-        else if(winnerTeam != Team.None && playerTeam != winnerTeam)
+        else if(winnerTeam != Team.None && playerTeam != Team.None && playerTeam != winnerTeam)
             OnRoundLoss?.Invoke();
 
         int? previousDeaths = messageJson.SelectToken("previously.player.match_stats.deaths", false)?.Value<int>();
         int? currentDeaths = messageJson.SelectToken("player.match_stats.deaths", false)?.Value<int>();
-        if(currentSteamId == mySteamId && previousSteamId == currentSteamId && currentDeaths > previousDeaths)
+        if(previousSteamId is null && currentSteamId == mySteamId && currentDeaths > previousDeaths)
             OnDeath?.Invoke();
-        else if(currentSteamId != mySteamId)
-            Console.WriteLine("Not my SteamId");
         
         int? previousKills = messageJson.SelectToken("previously.player.match_stats.kills", false)?.Value<int>();
         int? currentKills = messageJson.SelectToken("player.match_stats.kills", false)?.Value<int>();
-        if(currentSteamId == mySteamId && previousSteamId == currentSteamId && currentKills > previousKills)
+        if(previousSteamId is null && currentSteamId == mySteamId && currentKills > previousKills)
             OnKill?.Invoke();
-        else if(currentSteamId != mySteamId)
-            Console.WriteLine("Not my SteamId");
     }
 
     private RoundState ParseRoundStateFromString(string? str)
