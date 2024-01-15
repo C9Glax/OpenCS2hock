@@ -15,12 +15,8 @@ internal class CS2MessageHandler
     internal void HandleCS2Message(string message, string mySteamId)
     {
         JObject messageJson = JObject.Parse(message);
-        string? steamId = messageJson.SelectToken("player.steamid", false)?.Value<string>();
-        if (steamId is null || steamId != mySteamId)
-        {
-            Console.WriteLine("Not my steamid");
-            return;
-        }
+        string? previousSteamId = messageJson.SelectToken("previously.player.steamid", false)?.Value<string>();
+        string? currentSteamId = messageJson.SelectToken("player.steamid", false)?.Value<string>();
         
         RoundState currentRoundState = ParseRoundStateFromString(messageJson.SelectToken("round.phase", false)?.Value<string>());
         RoundState previousRoundState = ParseRoundStateFromString(messageJson.SelectToken("previously.round.phase", false)?.Value<string>());
@@ -40,12 +36,12 @@ internal class CS2MessageHandler
 
         int? previousDeaths = messageJson.SelectToken("previously.player.match_stats.deaths", false)?.Value<int>();
         int? currentDeaths = messageJson.SelectToken("player.match_stats.deaths", false)?.Value<int>();
-        if(currentDeaths > previousDeaths)
+        if(currentSteamId == mySteamId && previousSteamId == currentSteamId && currentDeaths > previousDeaths)
             OnDeath?.Invoke();
         
         int? previousKills = messageJson.SelectToken("previously.player.match_stats.kills", false)?.Value<int>();
         int? currentKills = messageJson.SelectToken("player.match_stats.kills", false)?.Value<int>();
-        if(currentKills > previousKills)
+        if(currentSteamId == mySteamId && previousSteamId == currentSteamId && currentKills > previousKills)
             OnKill?.Invoke();
     }
 
