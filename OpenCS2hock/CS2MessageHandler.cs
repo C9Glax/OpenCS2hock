@@ -38,11 +38,15 @@ internal class CS2MessageHandler
         int? currentDeaths = messageJson.SelectToken("player.match_stats.deaths", false)?.Value<int>();
         if(currentSteamId == mySteamId && previousSteamId == currentSteamId && currentDeaths > previousDeaths)
             OnDeath?.Invoke();
+        else if(currentSteamId != mySteamId)
+            Console.WriteLine("Not my SteamId");
         
         int? previousKills = messageJson.SelectToken("previously.player.match_stats.kills", false)?.Value<int>();
         int? currentKills = messageJson.SelectToken("player.match_stats.kills", false)?.Value<int>();
         if(currentSteamId == mySteamId && previousSteamId == currentSteamId && currentKills > previousKills)
             OnKill?.Invoke();
+        else if(currentSteamId != mySteamId)
+            Console.WriteLine("Not my SteamId");
     }
 
     private RoundState ParseRoundStateFromString(string? str)
