@@ -3,7 +3,7 @@ Electrifying your Counter-Strike experience. With [OpenShock](https://openshock.
 
 ## How to use
 
-Download [latest Release](/releases/latest) and execute.
+Download [latest Release](https://github.com/C9Glax/OpenCS2hock/releases/latest) and execute.
 
 Example `config.json`. Place next to executable. Will also be generated on first start.
 ```json
