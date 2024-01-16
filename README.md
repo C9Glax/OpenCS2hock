@@ -1,4 +1,7 @@
 ﻿# OpenCS2hock
+![GitHub License](https://img.shields.io/github/license/c9glax/OpenCS2hock)
+![GitHub Release](https://img.shields.io/github/v/release/c9glax/OpenCS2hock)
+
 Electrifying your Counter-Strike experience. With [OpenShock](https://openshock.org/)!
 
 ## How to use
