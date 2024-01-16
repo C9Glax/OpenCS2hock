@@ -1,7 +1,7 @@
 ﻿Example `config.json`. Place next to executable. Will also be generated on first start.
-```
+```json
 {
-  "SteamId": "<Your SteamId>",
+  "LogLevel": 2,
   "OpenShockSettings": {
     "Endpoint": "https://api.shocklink.net",
     "ApiKey": "<Your Shocklink API Key>",
@@ -16,17 +16,16 @@
     "Max": 1000
   },
   "Actions": {
-    "OnKill": "Beep",
+    "OnKill": "Nothing",
     "OnDeath": "Shock",
     "OnRoundStart": "Nothing",
     "OnRoundEnd": "Vibrate",
     "OnRoundWin": "Nothing",
-    "OnRoundLoss": "Shock"
+    "OnRoundLoss": "Shock",
+    "OnDamageTaken": "Vibrate"
   }
 }
 ```
-### SteamId
-Your SteamId64 [here](https://steamid.io/lookup)
 
 ### ApiKey 
 For OpenShock get token [here](https://shocklink.net/#/dashboard/tokens)
