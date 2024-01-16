@@ -32,7 +32,8 @@ public struct Settings
         {"OnRoundStart", "Vibrate"},
         {"OnRoundEnd", "Nothing"},
         {"OnRoundWin", "Beep"},
-        {"OnRoundLoss", "Nothing"}
+        {"OnRoundLoss", "Nothing"},
+        {"OnDamageTaken", "Vibrate"}
     };
 
     public Settings()

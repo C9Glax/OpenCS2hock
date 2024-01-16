@@ -53,8 +53,20 @@ public class OpenCS2hock
                     case "OnRoundWin":
                         this._cs2GSI.OnRoundWin += (cs2EventArgs) => shocker.Control(Settings.StringToAction(kv.Value));
                         break;
+                    case "OnDamageTaken":
+                        this._cs2GSI.OnDamageTaken += (cs2EventArgs) =>
+                            shocker.Control(Settings.StringToAction(kv.Value),
+                                intensity: MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100,
+                                    _settings.IntensityRange.Min, _settings.IntensityRange.Max));
+                        break;
                 }
             }
         }
+    }
+
+    private int MapInt(int input, int fromLow, int fromHigh, int toLow, int toHigh) 
+    {
+        int mappedValue = (input - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+        return mappedValue;
     }
 }
