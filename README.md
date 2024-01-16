@@ -1,4 +1,11 @@
-﻿Example `config.json`. Place next to executable. Will also be generated on first start.
+﻿# OpenCS2hock
+Electrifying your Counter-Strike experience. With [OpenShock](https://openshock.org/)!
+
+## How to use
+
+Download [latest Release](/releases/latest) and execute.
+
+Example `config.json`. Place next to executable. Will also be generated on first start.
 ```json
 {
   "LogLevel": 2,
@@ -36,7 +43,7 @@ List of Shocker-Ids, comma seperated. Get Id [here](https://shocklink.net/#/dash
 Example `[ "ID-1", "ID-2" ]`
 
 ### Intensity Range
-`0-100`
+`0-100`%
 
 
 ### Duration Range
@@ -46,3 +53,5 @@ in ms
 - Beep
 - Shock
 - Vibrate
+
+# Using [CS2GSI](https://github.com/C9Glax/CS2GSI)
