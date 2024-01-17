@@ -121,7 +121,7 @@ public static class Setup
                     "https://api.shocklink.net");
                 string apiKey = QueryString("OpenShock API-Key:","");
                 Console.WriteLine("Shocker IDs associated with this API:");
-                List<string> shockerIds = GetShockerIds(c.Shockers);
+                List<string> shockerIds = AddShockerIds();
                 IntensityRange intensityRange = GetIntensityRange();
                 DurationRange durationRange = GetDurationRange();
 
@@ -184,6 +184,24 @@ public static class Setup
         short min = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[1].Value);
         short max = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[2].Value);
         return new DurationRange(min, max);
+    }
+
+    private static List<string> AddShockerIds()
+    {
+        List<string> ids = new();
+        bool addAnother = true;
+        while (ids.Count < 1 || addAnother)
+        {
+            string id = QueryString("Shocker ID:", "");
+            while (id.Length < 1)
+                id = QueryString("Shocker ID:", "");
+            
+            ids.Add(id);
+            
+            Console.WriteLine("Add another ID? (Y/N):");
+            addAnother = Console.ReadKey().Key == ConsoleKey.Y;
+        }
+        return ids;
     }
 
     private static List<string> GetShockerIds(List<Shocker> shockers)
