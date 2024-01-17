@@ -6,10 +6,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>OpenCS2Hock</RootNamespace>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CS2GSI" Version="1.0.4" />
+      <PackageReference Include="CS2GSI" Version="1.0.6" />
+      <PackageReference Include="CShocker" Version="1.1.11" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 

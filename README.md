@@ -12,35 +12,41 @@ Example `config.json`. Place next to executable. Will also be generated on first
 ```json
 {
   "LogLevel": 2,
-  "OpenShockSettings": {
-    "Endpoint": "https://api.shocklink.net",
-    "ApiKey": "<Your Shocklink API Key>",
-    "Shockers": [ "<Shocker Id> comma seperated" ]
-  },
-  "IntensityRange": {
-    "Min": 30,
-    "Max": 60
-  },
-  "DurationRange": {
-    "Min": 1000,
-    "Max": 1000
-  },
-  "Actions": {
-    "OnKill": "Nothing",
-    "OnDeath": "Shock",
-    "OnRoundStart": "Nothing",
-    "OnRoundEnd": "Vibrate",
-    "OnRoundWin": "Nothing",
-    "OnRoundLoss": "Shock",
-    "OnDamageTaken": "Vibrate"
-  }
+  "Shockers": [
+    {
+      "ShockerIds": [
+        "ID HERE"
+      ],
+      "IntensityRange": {
+        "Min": 30,
+        "Max": 50
+      },
+      "DurationRange": {
+        "Min": 1000,
+        "Max": 1000
+      },
+      "ApiType": 0,
+      "Endpoint": "https://api.shocklink.net",
+      "ApiKey": "API KEY HERE"
+    }
+  ],
+  "ShockerActions": [
+    {
+      "TriggerEvent": 2,
+      "ShockerIds": [
+        "SAME ID HERE"
+      ],
+      "Action": 2,
+      "ValueFromInput": false
+    }
+  ]
 }
 ```
 
 ### ApiKey 
 For OpenShock get token [here](https://shocklink.net/#/dashboard/tokens)
 
-### Shockers
+### ShockerIds
 List of Shocker-Ids, comma seperated. Get Id [here](https://shocklink.net/#/dashboard/shockers/own). Press the three dots -> Edit
 
 Example `[ "ID-1", "ID-2" ]`
@@ -56,5 +62,15 @@ in ms
 - Beep
 - Shock
 - Vibrate
+- Nothing
 
-# Using [CS2GSI](https://github.com/C9Glax/CS2GSI)
+# Using
+### CS2GSI
+[![GitHub License](https://img.shields.io/github/license/c9glax/CS2GSI)](/LICENSE)
+[![NuGet Version](https://img.shields.io/nuget/v/CS2GSI)](https://www.nuget.org/packages/CS2GSI/)
+[![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI)
+[![GitHub Release](https://img.shields.io/github/v/release/c9glax/CS2GSI)](https://github.com/C9Glax/CS2GSI/releases/latest)
+### CShocker
+[![GitHub License](https://img.shields.io/github/license/c9glax/cshocker)](https://github.com/C9Glax/CShocker)
+[![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/cshocker)
+[![NuGet Version](https://img.shields.io/nuget/v/CShocker)](https://shields.io/badges/nu-get-version)

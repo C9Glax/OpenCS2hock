@@ -6,6 +6,6 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        OpenCS2hock openCS2Hock = new OpenCS2hock(logger: new Logger(LogLevel.Information));
+        OpenCS2hock openCS2Hock = new OpenCS2hock(editConfig: true, logger: new Logger(LogLevel.Information));
     }
 }
