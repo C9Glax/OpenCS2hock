@@ -50,7 +50,7 @@ Example `config.json`. Place next to executable. Will also be generated on first
 For OpenShock (HTTP) get token [here](https://shocklink.net/#/dashboard/tokens)
 
 ### ApiType
-CShocker[![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/Abstract/ShockerApi.cs)
+CShocker [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/cshocker) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/Abstract/ShockerApi.cs)
 
 ### ShockerIds
 List of Shocker-Ids, comma seperated. Get ID of shocker [here](https://shocklink.net/#/dashboard/shockers/own). Press the three dots -> Edit
@@ -64,10 +64,10 @@ Example `[ "ID-1", "ID-2" ]`
 in ms
 
 ### TriggerEvent IDs
-From CS2GSI[![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CS2GSI/blob/master/CS2GSI/CS2Event.cs)
+From CS2GSI [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CS2GSI/blob/master/CS2GSI/CS2Event.cs)
 
 ### Values for `Actions`
-From CShocker[![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/ControlAction.cs)
+From CShocker [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/ControlAction.cs)
 
 ### ValueFromInput
 Use CS2GSI EventArgs value to determine Intensity (within configured Range)
