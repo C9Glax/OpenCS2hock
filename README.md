@@ -67,7 +67,7 @@ in ms
 From CS2GSI [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CS2GSI/blob/master/CS2GSI/CS2Event.cs)
 
 ### Values for `Actions`
-From CShocker [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/CS2GSI) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/ControlAction.cs)
+From CShocker [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/cshocker) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/ControlAction.cs)
 
 ### ValueFromInput
 Use CS2GSI EventArgs value to determine Intensity (within configured Range)
