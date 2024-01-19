@@ -125,7 +125,7 @@ public static class Setup
                 apiKey = QueryString("OpenShock API-Key:","");
                 intensityRange = GetIntensityRange();
                 durationRange = GetDurationRange();
-                newShocker = new OpenShockHttp(shockerIds, intensityRange, durationRange, apiUri, apiKey);
+                newShocker = new OpenShockHttp(shockerIds, intensityRange, durationRange, apiKey, apiUri);
                 newShocker.ShockerIds.AddRange(((OpenShockHttp)newShocker).GetShockers());
                 break;
             case 3: //PiShock (HTTP)
