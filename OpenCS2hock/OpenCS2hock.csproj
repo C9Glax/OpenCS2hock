@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CS2GSI" Version="1.0.6" />
-      <PackageReference Include="CShocker" Version="1.2.0" />
+      <PackageReference Include="CS2GSI" Version="1.0.7" />
+      <PackageReference Include="CShocker" Version="1.2.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 

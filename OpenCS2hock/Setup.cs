@@ -4,7 +4,7 @@ using CShocker.Shockers;
 using CShocker.Shockers.Abstract;
 using CShocker.Shockers.APIS;
 using Microsoft.Extensions.Logging;
-using CS2Event = CS2GSI.CS2GSI.CS2Event;
+using CS2Event = CS2GSI.CS2Event;
 
 namespace OpenCS2hock;
 
@@ -117,18 +117,16 @@ public static class Setup
         Shocker newShocker;
         DurationRange durationRange;
         IntensityRange intensityRange;
-        List<string> shockerIds;
+        List<string> shockerIds = new();
         switch (selected)
         {
             case 1: //OpenShock (HTTP)
                 apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
                 apiKey = QueryString("OpenShock API-Key:","");
-                Console.WriteLine("Shocker IDs associated with this API:");
-                shockerIds = AddShockerIds();
                 intensityRange = GetIntensityRange();
                 durationRange = GetDurationRange();
-
                 newShocker = new OpenShockHttp(shockerIds, intensityRange, durationRange, apiUri, apiKey);
+                newShocker.ShockerIds.AddRange(((OpenShockHttp)newShocker).GetShockers());
                 break;
             case 3: //PiShock (HTTP)
                 apiUri = QueryString("PiShock API-Endpoint (https://do.pishock.com/api/apioperate):", "https://do.pishock.com/api/apioperate");

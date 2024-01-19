@@ -2,7 +2,7 @@
 using CS2GSI;
 using CShocker.Ranges;
 using CShocker.Shockers.Abstract;
-using CS2Event = CS2GSI.CS2GSI.CS2Event;
+using CS2Event = CS2GSI.CS2Event;
 
 namespace OpenCS2hock;
 

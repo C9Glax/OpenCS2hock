@@ -1,5 +1,5 @@
-﻿using CShocker.Shockers;
-using CS2Event = CS2GSI.CS2GSI.CS2Event;
+﻿using CS2GSI;
+using CShocker.Shockers;
 
 namespace OpenCS2hock;
 
