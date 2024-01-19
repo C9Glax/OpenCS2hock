@@ -31,6 +31,8 @@ public struct Configuration
             Setup.Run().SaveConfiguration();
           
         Configuration c = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(settingsFilePath), new CShocker.Shockers.ShockerJsonConverter());
+        if (!c.ConfigurationValid())
+            throw new Exception("Configuration validation failed.");
         foreach (Shocker cShocker in c.Shockers)
             cShocker.SetLogger(logger);
         return c;
@@ -40,5 +42,10 @@ public struct Configuration
     {
         string settingsFilePath = path ?? "config.json";
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
+    }
+
+    private bool ConfigurationValid()
+    {
+        return true; //TODO Check values
     }
 }
