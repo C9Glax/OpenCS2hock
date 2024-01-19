@@ -105,31 +105,45 @@ public static class Setup
     {
         Console.WriteLine("Select API:");
         Console.WriteLine("1) OpenShock (HTTP)");
-        Console.WriteLine("2) OpenShock (Serial)");
+        Console.WriteLine("2) OpenShock (Serial) NotImplemented"); //TODO
         Console.WriteLine("3) PiShock (HTTP)");
-        Console.WriteLine("4) PiShock (Serial)");
+        Console.WriteLine("4) PiShock (Serial) NotImplemented"); //TODO
         string? selectedChar = Console.ReadLine();
         int selected;
-        while (!int.TryParse(selectedChar, out selected) || selected < 1 || selected > 1)
+        while (!int.TryParse(selectedChar, out selected) || (selected != 1 && selected != 3))
             selectedChar = Console.ReadLine();
 
+        string apiUri, apiKey;
         Shocker newShocker;
+        DurationRange durationRange;
+        IntensityRange intensityRange;
+        List<string> shockerIds;
         switch (selected)
         {
             case 1: //OpenShock (HTTP)
-                string apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):",
-                    "https://api.shocklink.net");
-                string apiKey = QueryString("OpenShock API-Key:","");
+                apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
+                apiKey = QueryString("OpenShock API-Key:","");
                 Console.WriteLine("Shocker IDs associated with this API:");
-                List<string> shockerIds = AddShockerIds();
-                IntensityRange intensityRange = GetIntensityRange();
-                DurationRange durationRange = GetDurationRange();
+                shockerIds = AddShockerIds();
+                intensityRange = GetIntensityRange();
+                durationRange = GetDurationRange();
 
                 newShocker = new OpenShockHttp(shockerIds, intensityRange, durationRange, apiUri, apiKey);
                 break;
+            case 3: //PiShock (HTTP)
+                apiUri = QueryString("PiShock API-Endpoint (https://do.pishock.com/api/apioperate):", "https://do.pishock.com/api/apioperate");
+                apiKey = QueryString("PiShock API-Key:","");
+                string username = QueryString("Username:","");
+                string shareCode = QueryString("Sharecode:","");
+                Console.WriteLine("Shocker IDs associated with this API:");
+                shockerIds = AddShockerIds();
+                intensityRange = GetIntensityRange();
+                durationRange = GetDurationRange();
+
+                newShocker = new PiShockHttp(shockerIds, intensityRange, durationRange, apiKey, username, shareCode, apiUri);
+                break;
             // ReSharper disable thrice RedundantCaseLabel
             case 2: //OpenShock (Serial)
-            case 3: //PiShock (HTTP)
             case 4: //PiShock (Serial)
             default:
                 throw new NotImplementedException();
