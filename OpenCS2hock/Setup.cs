@@ -218,23 +218,26 @@ public static class Setup
 
     private static List<string> GetShockerIds(List<Shocker> shockers)
     {
-        List<string> allShockerIds = new();
-        foreach(Shocker shocker in shockers)
-            allShockerIds.AddRange(shocker.ShockerIds);
-
         List<string> ids = new();
         bool addAnother = true;
         while (ids.Count < 1 || addAnother)
         {
+            Console.WriteLine("Select Shocker API:");
+                for(int i = 0; i < shockers.Count; i++)
+                    Console.WriteLine($"{i}) {shockers[i]}");
             
-            for (int i = 0; i < allShockerIds.Count; i++)
-                Console.WriteLine($"{i}) {allShockerIds[i]}");
+            int selectedShocker;
+            while (!int.TryParse(Console.ReadLine(), out selectedShocker) || selectedShocker < 0 || selectedShocker >= shockers.Count)
+                Console.WriteLine("Select Shocker API:");
+            
+            for (int i = 0; i < shockers[selectedShocker].ShockerIds.Count; i++)
+                Console.WriteLine($"{i}) {shockers[selectedShocker].ShockerIds[i]}");
 
             int selectedIndex;
-            while (!int.TryParse(Console.ReadLine(), out selectedIndex) || selectedIndex < 0 || selectedIndex >= allShockerIds.Count)
+            while (!int.TryParse(Console.ReadLine(), out selectedIndex) || selectedIndex < 0 || selectedIndex >= shockers[selectedShocker].ShockerIds.Count)
                 Console.WriteLine("Select ID:");
             
-            ids.Add(allShockerIds[selectedIndex]);
+            ids.Add(shockers[selectedShocker].ShockerIds[selectedIndex]);
             
             Console.WriteLine("Add another ID? (Y/N):");
             addAnother = Console.ReadKey().Key == ConsoleKey.Y;
