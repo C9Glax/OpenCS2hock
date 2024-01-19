@@ -49,8 +49,8 @@ Example `config.json`. Place next to executable. Will also be generated on first
 ## Shockers
 
 ### ApiKey 
-For OpenShock (HTTP) get token [here](https://shocklink.net/#/dashboard/tokens)
-For PiShock (HTTP) get information [here](https://apidocs.pishock.com/#header-authenticating)
+- For OpenShock (HTTP) get token [here](https://shocklink.net/#/dashboard/tokens)
+- For PiShock (HTTP) get information [here](https://apidocs.pishock.com/#header-authenticating)
 
 ### ApiType
 CShocker [![Github](https://img.shields.io/badge/Github-8A2BE2)](https://github.com/C9Glax/cshocker) [here](https://github.com/C9Glax/CShocker/blob/master/CShocker/Shockers/Abstract/ShockerApi.cs)
