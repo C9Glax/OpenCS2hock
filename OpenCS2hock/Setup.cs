@@ -105,12 +105,12 @@ public static class Setup
     {
         Console.WriteLine("Select API:");
         Console.WriteLine("1) OpenShock (HTTP)");
-        Console.WriteLine("2) OpenShock (Serial) NotImplemented"); //TODO
+        Console.WriteLine("2) OpenShock (Serial)");
         Console.WriteLine("3) PiShock (HTTP)");
         Console.WriteLine("4) PiShock (Serial) NotImplemented"); //TODO
         string? selectedChar = Console.ReadLine();
         int selected;
-        while (!int.TryParse(selectedChar, out selected) || (selected != 1 && selected != 3))
+        while (!int.TryParse(selectedChar, out selected) || selected < 1 || selected > 3)
             selectedChar = Console.ReadLine();
 
         string apiUri, apiKey;
@@ -128,6 +128,21 @@ public static class Setup
                 newShocker = new OpenShockHttp(shockerIds, intensityRange, durationRange, apiKey, apiUri);
                 newShocker.ShockerIds.AddRange(((OpenShockHttp)newShocker).GetShockers());
                 break;
+            case 2: //OpenShock (Serial)
+                apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
+                apiKey = QueryString("OpenShock API-Key:","");
+                intensityRange = GetIntensityRange();
+                durationRange = GetDurationRange();
+                SerialShocker.SerialPortInfo serialPort = SelectSerialPort();
+                newShocker = new OpenShockSerial(new Dictionary<string, OpenShockSerial.ShockerModel>(), intensityRange,
+                    durationRange, serialPort);
+                foreach (KeyValuePair<string, OpenShockSerial.ShockerModel> kv in ((OpenShockSerial)newShocker)
+                         .GetShockers(apiUri, apiKey))
+                {
+                    newShocker.ShockerIds.Add(kv.Key);
+                    ((OpenShockSerial)newShocker).Model.Add(kv.Key, kv.Value);
+                }
+                break;
             case 3: //PiShock (HTTP)
                 apiUri = QueryString("PiShock API-Endpoint (https://do.pishock.com/api/apioperate):", "https://do.pishock.com/api/apioperate");
                 apiKey = QueryString("PiShock API-Key:","");
@@ -141,12 +156,30 @@ public static class Setup
                 newShocker = new PiShockHttp(shockerIds, intensityRange, durationRange, apiKey, username, shareCode, apiUri);
                 break;
             // ReSharper disable thrice RedundantCaseLabel
-            case 2: //OpenShock (Serial)
             case 4: //PiShock (Serial)
             default:
                 throw new NotImplementedException();
         }
         c.Shockers.Add(newShocker);
+    }
+
+    private static SerialShocker.SerialPortInfo SelectSerialPort()
+    {
+        List<SerialShocker.SerialPortInfo> serialPorts = SerialShocker.GetSerialPorts();
+        
+        for(int i = 0; i < serialPorts.Count; i++)
+            Console.WriteLine($"{i}) {serialPorts[i]}");
+
+        Console.WriteLine($"Select Serial Port [0-{serialPorts.Count-1}]:");
+        string? selectedPortStr = Console.ReadLine();
+        int selectedPort = -1;
+        while (!int.TryParse(selectedPortStr, out selectedPort) || selectedPort < 0 || selectedPort > serialPorts.Count - 1)
+        {
+            Console.WriteLine($"Select Serial Port [0-{serialPorts.Count-1}]:");
+            selectedPortStr = Console.ReadLine();
+        }
+
+        return serialPorts[selectedPort];
     }
 
     private static void AddAction(ref Configuration c)
@@ -230,12 +263,13 @@ public static class Setup
             while (!int.TryParse(Console.ReadLine(), out selectedShocker) || selectedShocker < 0 || selectedShocker >= shockers.Count)
                 Console.WriteLine("Select Shocker API:");
             
+            Console.WriteLine("Select Shocker:");
             for (int i = 0; i < shockers[selectedShocker].ShockerIds.Count; i++)
                 Console.WriteLine($"{i}) {shockers[selectedShocker].ShockerIds[i]}");
 
             int selectedIndex;
             while (!int.TryParse(Console.ReadLine(), out selectedIndex) || selectedIndex < 0 || selectedIndex >= shockers[selectedShocker].ShockerIds.Count)
-                Console.WriteLine("Select ID:");
+                Console.WriteLine("Select Shocker:");
             
             ids.Add(shockers[selectedShocker].ShockerIds[selectedIndex]);
             
