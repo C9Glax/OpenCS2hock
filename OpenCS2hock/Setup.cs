@@ -1,8 +1,10 @@
 ﻿using System.Text.RegularExpressions;
+using CShocker.Devices.Abstract;
+using CShocker.Devices.Additional;
+using CShocker.Devices.APIs;
 using CShocker.Ranges;
 using CShocker.Shockers;
 using CShocker.Shockers.Abstract;
-using CShocker.Shockers.APIS;
 using Microsoft.Extensions.Logging;
 using CS2Event = CS2GSI.CS2Event;
 
@@ -16,36 +18,13 @@ public static class Setup
         Console.Clear();
         Console.WriteLine("Running first-time setup.");
         Configuration c = new();
-        
-        Console.WriteLine("First adding APIs:");
-        Console.WriteLine("Press Enter.");
-        while (Console.ReadKey().Key != ConsoleKey.Enter)
-        {//NYAA
-        }
 
-        bool addShocker = true;
-        while (c.Shockers.Count < 1 || addShocker)
-        {
-            Console.Clear();
-            AddShockerApi(ref c);
-            Console.WriteLine("Add another Shocker-API (Y/N):");
-            addShocker = Console.ReadKey().Key == ConsoleKey.Y;
-        }
+        AddApisWorkflow(ref c);
         
         Console.Clear();
-        Console.WriteLine("Now adding Actions:");
-        Console.WriteLine("Press Enter.");
-        while (Console.ReadKey().Key != ConsoleKey.Enter)
-        {//NYAA
-        }
-        bool addAction = true;
-        while (c.ShockerActions.Count < 1 || addAction)
-        {
-            Console.Clear();
-            AddAction(ref c);
-            Console.WriteLine("Add another Action (Y/N):");
-            addAction = Console.ReadKey().Key == ConsoleKey.Y;
-        }
+        
+        AddActionsWorkflow(ref c);
+        
         return c;
     }
 
@@ -55,11 +34,11 @@ public static class Setup
         while (pressedKey is not ConsoleKey.X && pressedKey is not ConsoleKey.Q)
         {
             Console.Clear();
-            Console.WriteLine("Config Edit Mode.");
-            Console.WriteLine("What do you want to edit?");
+            Console.WriteLine("Config Edit Mode.\n");
             Console.WriteLine("1) LogLevel");
-            Console.WriteLine("2) Shocker-APIs");
-            Console.WriteLine("3) Event Actions");
+            Console.WriteLine("2) Add API");
+            Console.WriteLine("3) Refresh Shockers (OpenShock)");
+            Console.WriteLine("3) Add Action");
             Console.WriteLine("\nq) Quit Edit Mode");
             pressedKey = Console.ReadKey().Key;
             switch (pressedKey)
@@ -74,31 +53,54 @@ public static class Setup
                            selected >= levels.Length)
                     {//NYAA
                     }
+                    Console.WriteLine();//NewLine after Input
                     c.LogLevel = Enum.Parse<LogLevel>(levels[selected]);
                     break;
                 case ConsoleKey.D2:
-                    bool addShocker = true;
-                    while (c.Shockers.Count < 1 || addShocker)
-                    {
-                        Console.Clear();
-                        AddShockerApi(ref c);
-                        Console.WriteLine("Add another Shocker-API (Y/N):");
-                        addShocker = Console.ReadKey().Key == ConsoleKey.Y;
-                    }
+                    AddApisWorkflow(ref c);
                     break;
                 case ConsoleKey.D3:
-                    bool addAction = true;
-                    while (c.ShockerActions.Count < 1 || addAction)
+                    foreach (OpenShockApi api in c.Apis.Where(a => a is OpenShockApi))
                     {
-                        Console.Clear();
-                        AddAction(ref c);
-                        Console.WriteLine("Add another Action (Y/N):");
-                        addAction = Console.ReadKey().Key == ConsoleKey.Y;
+                        Configuration configuration = c;
+                        c.Shockers.AddRange(api.GetShockers().Where(s => !configuration.Shockers.Contains(s)));
                     }
+
+                    break;
+                case ConsoleKey.D4:
+                    AddActionsWorkflow(ref c);
                     break;
             }
         }
         c.SaveConfiguration();
+    }
+
+    private static void AddApisWorkflow(ref Configuration c)
+    {
+        Console.WriteLine("Adding APIs.");
+        bool addApis = true;
+        while (c.Apis.Count < 1 || addApis)
+        {
+            Console.Clear();
+            AddShockerApi(ref c);
+            Console.WriteLine("Add another Api (Y/N):");
+            addApis = Console.ReadKey().Key == ConsoleKey.Y;
+            Console.WriteLine();//NewLine after Input
+        }
+    }
+
+    private static void AddActionsWorkflow(ref Configuration c)
+    {
+        Console.WriteLine("Adding Actions.");
+        bool addAction = true;
+        while (c.ShockerActions.Count < 1 || addAction)
+        {
+            Console.Clear();
+            AddAction(ref c);
+            Console.WriteLine("Add another Action (Y/N):");
+            addAction = Console.ReadKey().Key == ConsoleKey.Y;
+            Console.WriteLine();//NewLine after Input
+        }
     }
 
     private static void AddShockerApi(ref Configuration c)
@@ -106,18 +108,18 @@ public static class Setup
         Console.WriteLine("Select API:");
         Console.WriteLine("1) OpenShock (HTTP)");
         Console.WriteLine("2) OpenShock (Serial)");
-        Console.WriteLine("3) PiShock (HTTP)");
+        Console.WriteLine("3) PiShock (HTTP) NotImplemented"); //TODO
         Console.WriteLine("4) PiShock (Serial) NotImplemented"); //TODO
-        string? selectedChar = Console.ReadLine();
-        int selected;
-        while (!int.TryParse(selectedChar, out selected) || selected < 1 || selected > 3)
-            selectedChar = Console.ReadLine();
+        char selectedChar = Console.ReadKey().KeyChar;
+        int selected = 0;
+        while (!int.TryParse(selectedChar.ToString(), out selected) || selected < 1 || selected > 3)
+            selectedChar = Console.ReadKey().KeyChar;
+        Console.WriteLine();//NewLine after Input
 
         string apiUri, apiKey;
-        Shocker newShocker;
+        Api? api = null;
         DurationRange durationRange;
         IntensityRange intensityRange;
-        List<string> shockerIds = new();
         switch (selected)
         {
             case 1: //OpenShock (HTTP)
@@ -125,47 +127,33 @@ public static class Setup
                 apiKey = QueryString("OpenShock API-Key:","");
                 intensityRange = GetIntensityRange();
                 durationRange = GetDurationRange();
-                newShocker = new OpenShockHttp(shockerIds, intensityRange, durationRange, apiKey, apiUri);
-                newShocker.ShockerIds.AddRange(((OpenShockHttp)newShocker).GetShockers());
-                break;
+                api = new OpenShockHttp(intensityRange, durationRange, apiKey, apiUri);
+                foreach(OpenShockShocker shocker in ((OpenShockHttp)api).GetShockers())
+                    c.Shockers.Add(shocker);
+                goto default;
             case 2: //OpenShock (Serial)
                 apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
                 apiKey = QueryString("OpenShock API-Key:","");
                 intensityRange = GetIntensityRange();
                 durationRange = GetDurationRange();
-                SerialShocker.SerialPortInfo serialPort = SelectSerialPort();
-                newShocker = new OpenShockSerial(new Dictionary<string, OpenShockSerial.ShockerModel>(), intensityRange,
-                    durationRange, serialPort);
-                foreach (KeyValuePair<string, OpenShockSerial.ShockerModel> kv in ((OpenShockSerial)newShocker)
-                         .GetShockers(apiUri, apiKey))
-                {
-                    newShocker.ShockerIds.Add(kv.Key);
-                    ((OpenShockSerial)newShocker).Model.Add(kv.Key, kv.Value);
-                }
-                break;
+                SerialPortInfo serialPort = SelectSerialPort();
+                api = new OpenShockSerial(intensityRange, durationRange, serialPort, apiKey, apiUri);
+                foreach (OpenShockShocker shocker in ((OpenShockSerial)api).GetShockers())
+                    c.Shockers.Add(shocker);
+                goto default;
             case 3: //PiShock (HTTP)
-                apiUri = QueryString("PiShock API-Endpoint (https://do.pishock.com/api/apioperate):", "https://do.pishock.com/api/apioperate");
-                apiKey = QueryString("PiShock API-Key:","");
-                string username = QueryString("Username:","");
-                string shareCode = QueryString("Sharecode:","");
-                Console.WriteLine("Shocker IDs associated with this API:");
-                shockerIds = AddShockerIds();
-                intensityRange = GetIntensityRange();
-                durationRange = GetDurationRange();
-
-                newShocker = new PiShockHttp(shockerIds, intensityRange, durationRange, apiKey, username, shareCode, apiUri);
-                break;
-            // ReSharper disable thrice RedundantCaseLabel
             case 4: //PiShock (Serial)
             default:
-                throw new NotImplementedException();
+                if (api is null)
+                    throw new NotImplementedException();
+                c.Apis.Add(api);
+                break;
         }
-        c.Shockers.Add(newShocker);
     }
 
-    private static SerialShocker.SerialPortInfo SelectSerialPort()
+    private static SerialPortInfo SelectSerialPort()
     {
-        List<SerialShocker.SerialPortInfo> serialPorts = SerialShocker.GetSerialPorts();
+        List<SerialPortInfo> serialPorts = SerialHelper.GetSerialPorts();
         
         for(int i = 0; i < serialPorts.Count; i++)
             Console.WriteLine($"{i}) {serialPorts[i]}");
@@ -178,6 +166,7 @@ public static class Setup
             Console.WriteLine($"Select Serial Port [0-{serialPorts.Count-1}]:");
             selectedPortStr = Console.ReadLine();
         }
+        Console.WriteLine();//NewLine after Input
 
         return serialPorts[selectedPort];
     }
@@ -185,21 +174,35 @@ public static class Setup
     private static void AddAction(ref Configuration c)
     {
         CS2Event triggerEvent = GetTrigger();
-        Console.WriteLine("Shocker IDs to trigger when Event occurs:");
-        List<string> shockerIds = GetShockerIds(c.Shockers);
+        Shocker shocker = GetShocker(c.Shockers);
         ControlAction action = GetControlAction();
-        bool useEventArgsValue = QueryBool("Try using EventArgs to control Intensity (within set limits)?", "false");
+        bool useEventArgsValue = QueryBool("Try using EventArgs to control Intensity (within set limits)?", false);
             
-        c.ShockerActions.Add(new ShockerAction(triggerEvent, shockerIds, action, useEventArgsValue));
+        c.ShockerActions.Add(new(triggerEvent, shocker, action, useEventArgsValue));
     }
 
-    private static bool QueryBool(string queryString, string defaultResult)
+    private static Shocker GetShocker(List<Shocker> shockers)
     {
-        string value = QueryString(queryString, defaultResult);
-        bool ret;
-        while (bool.TryParse(value, out ret))
-            value = QueryString(queryString, defaultResult);
-        return ret;
+        Console.WriteLine("Select Shocker:");
+        for (int i = 0; i < shockers.Count; i++)
+            Console.WriteLine($"{i}) {shockers[i]}");
+        
+        int selectedShockerIndex;
+        while (!int.TryParse(Console.ReadLine(), out selectedShockerIndex) || selectedShockerIndex < 0 || selectedShockerIndex > shockers.Count)
+            Console.WriteLine("Select Shocker:");
+        Console.WriteLine();//NewLine after Input
+
+        Shocker shocker = shockers[selectedShockerIndex];
+
+        return shocker;
+    }
+
+    private static bool QueryBool(string queryString, bool defaultResult)
+    {
+        Console.WriteLine(queryString);
+        char userInput = Console.ReadKey().KeyChar;
+        Console.WriteLine();//NewLine after Input
+        return bool.TryParse(userInput.ToString(), out bool ret) ? ret : defaultResult;
     }
 
     private static string QueryString(string queryString, string defaultResult)
@@ -229,54 +232,6 @@ public static class Setup
         short min = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[1].Value);
         short max = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[2].Value);
         return new DurationRange(min, max);
-    }
-
-    private static List<string> AddShockerIds()
-    {
-        List<string> ids = new();
-        bool addAnother = true;
-        while (ids.Count < 1 || addAnother)
-        {
-            string id = QueryString("Shocker ID:", "");
-            while (id.Length < 1)
-                id = QueryString("Shocker ID:", "");
-            
-            ids.Add(id);
-            
-            Console.WriteLine("Add another ID? (Y/N):");
-            addAnother = Console.ReadKey().Key == ConsoleKey.Y;
-        }
-        return ids;
-    }
-
-    private static List<string> GetShockerIds(List<Shocker> shockers)
-    {
-        List<string> ids = new();
-        bool addAnother = true;
-        while (ids.Count < 1 || addAnother)
-        {
-            Console.WriteLine("Select Shocker API:");
-                for(int i = 0; i < shockers.Count; i++)
-                    Console.WriteLine($"{i}) {shockers[i]}");
-            
-            int selectedShocker;
-            while (!int.TryParse(Console.ReadLine(), out selectedShocker) || selectedShocker < 0 || selectedShocker >= shockers.Count)
-                Console.WriteLine("Select Shocker API:");
-            
-            Console.WriteLine("Select Shocker:");
-            for (int i = 0; i < shockers[selectedShocker].ShockerIds.Count; i++)
-                Console.WriteLine($"{i}) {shockers[selectedShocker].ShockerIds[i]}");
-
-            int selectedIndex;
-            while (!int.TryParse(Console.ReadLine(), out selectedIndex) || selectedIndex < 0 || selectedIndex >= shockers[selectedShocker].ShockerIds.Count)
-                Console.WriteLine("Select Shocker:");
-            
-            ids.Add(shockers[selectedShocker].ShockerIds[selectedIndex]);
-            
-            Console.WriteLine("Add another ID? (Y/N):");
-            addAnother = Console.ReadKey().Key == ConsoleKey.Y;
-        }
-        return ids;
     }
 
     private static CS2Event GetTrigger()

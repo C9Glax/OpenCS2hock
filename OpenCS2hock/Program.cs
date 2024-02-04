@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GlaxLogger;
+using Microsoft.Extensions.Logging;
 
 namespace OpenCS2hock;
 
