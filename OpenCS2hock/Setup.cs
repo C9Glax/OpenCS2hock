@@ -38,7 +38,7 @@ public static class Setup
             Console.WriteLine("1) LogLevel");
             Console.WriteLine("2) Add API");
             Console.WriteLine("3) Refresh Shockers (OpenShock)");
-            Console.WriteLine("3) Add Action");
+            Console.WriteLine("4) Add Action");
             Console.WriteLine("\nq) Quit Edit Mode");
             pressedKey = Console.ReadKey().Key;
             switch (pressedKey)
