@@ -11,8 +11,8 @@
 
     <ItemGroup>
       <PackageReference Include="CS2GSI" Version="1.0.7" />
-      <PackageReference Include="CShocker" Version="2.1.1" />
-      <PackageReference Include="GlaxLogger" Version="1.0.4" />
+      <PackageReference Include="CShocker" Version="2.2.0" />
+      <PackageReference Include="GlaxLogger" Version="1.0.5" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
