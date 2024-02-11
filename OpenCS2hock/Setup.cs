@@ -63,7 +63,8 @@ public static class Setup
                     foreach (OpenShockApi api in c.Apis.Where(a => a is OpenShockApi))
                     {
                         Configuration configuration = c;
-                        c.Shockers.AddRange(api.GetShockers().Where(s => !configuration.Shockers.Contains(s)));
+                        foreach(OpenShockShocker s in api.GetShockers().Where(s => !configuration.Shockers.ContainsValue(s)))
+                            c.Shockers.Add(c.Shockers.Any() ? c.Shockers.Keys.Max() + 1 : 0, s);
                     }
 
                     break;
@@ -118,28 +119,22 @@ public static class Setup
 
         string apiUri, apiKey;
         Api? api = null;
-        DurationRange durationRange;
-        IntensityRange intensityRange;
         switch (selected)
         {
             case 1: //OpenShock (HTTP)
                 apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
                 apiKey = QueryString("OpenShock API-Key:","");
-                intensityRange = GetIntensityRange();
-                durationRange = GetDurationRange();
-                api = new OpenShockHttp(intensityRange, durationRange, apiKey, apiUri);
+                api = new OpenShockHttp(apiKey, apiUri);
                 foreach(OpenShockShocker shocker in ((OpenShockHttp)api).GetShockers())
-                    c.Shockers.Add(shocker);
+                    c.Shockers.Add(c.Shockers.Any() ? c.Shockers.Keys.Max() + 1 : 0, shocker);
                 goto default;
             case 2: //OpenShock (Serial)
                 apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
                 apiKey = QueryString("OpenShock API-Key:","");
-                intensityRange = GetIntensityRange();
-                durationRange = GetDurationRange();
                 SerialPortInfo serialPort = SelectSerialPort();
-                api = new OpenShockSerial(intensityRange, durationRange, serialPort, apiKey, apiUri);
+                api = new OpenShockSerial(serialPort, apiKey, apiUri);
                 foreach (OpenShockShocker shocker in ((OpenShockSerial)api).GetShockers())
-                    c.Shockers.Add(shocker);
+                    c.Shockers.Add(c.Shockers.Any() ? c.Shockers.Keys.Max() + 1 : 0, shocker);
                 goto default;
             case 3: //PiShock (HTTP)
             case 4: //PiShock (Serial)
@@ -174,27 +169,30 @@ public static class Setup
     private static void AddAction(ref Configuration c)
     {
         CS2Event triggerEvent = GetTrigger();
-        Shocker shocker = GetShocker(c.Shockers);
+        int shockerId = GetShockerId(c.Shockers);
         ControlAction action = GetControlAction();
         bool useEventArgsValue = QueryBool("Try using EventArgs to control Intensity (within set limits)?", false);
+        IntegerRange intensityRange = GetIntegerRange(0, 100, "%");
+        IntegerRange durationRange = GetIntegerRange(0, 30000, "ms");
             
-        c.ShockerActions.Add(new(triggerEvent, shocker, action, useEventArgsValue));
+        c.ShockerActions.Add(new(triggerEvent, shockerId, action, useEventArgsValue, intensityRange, durationRange));
     }
 
-    private static Shocker GetShocker(List<Shocker> shockers)
+    private static int GetShockerId(Dictionary<int, Shocker> shockersDict)
     {
         Console.WriteLine("Select Shocker:");
+        List<Shocker> shockers = shockersDict.Values.ToList();
         for (int i = 0; i < shockers.Count; i++)
             Console.WriteLine($"{i}) {shockers[i]}");
         
         int selectedShockerIndex;
-        while (!int.TryParse(Console.ReadLine(), out selectedShockerIndex) || selectedShockerIndex < 0 || selectedShockerIndex > shockers.Count)
+        while (!int.TryParse(Console.ReadLine(), out selectedShockerIndex) || selectedShockerIndex < 0 || selectedShockerIndex > shockersDict.Count)
             Console.WriteLine("Select Shocker:");
         Console.WriteLine();//NewLine after Input
 
         Shocker shocker = shockers[selectedShockerIndex];
 
-        return shocker;
+        return shockersDict.First(s => s.Value == shocker).Key;
     }
 
     private static bool QueryBool(string queryString, bool defaultResult)
@@ -212,26 +210,13 @@ public static class Setup
         return userInput?.Length > 0 ? userInput : defaultResult;
     }
 
-    private static IntensityRange GetIntensityRange()
+    private static IntegerRange GetIntegerRange(int min, int max, string? unit = null)
     {
-        Regex intensityRangeRex = new (@"([0-9]{1,3})\-(1?[0-9]{1,2})");
+        Regex rangeRex = new (@"([0-9]{1,5})\-([0-9]{1,5})");
         string intensityRangeStr = "";
-        while(!intensityRangeRex.IsMatch(intensityRangeStr))
-            intensityRangeStr = QueryString("Intensity Range (0-100) in %:", "0-100");
-        short min = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[1].Value);
-        short max = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[2].Value);
-        return new IntensityRange(min, max);
-    }
-    
-    private static DurationRange GetDurationRange()
-    {
-        Regex intensityRangeRex = new (@"([0-9]{1,4})\-([0-9]{1,5})");
-        string intensityRangeStr = "";
-        while(!intensityRangeRex.IsMatch(intensityRangeStr))
-            intensityRangeStr = QueryString("Duration Range (500-30000) in ms:", "500-30000");
-        short min = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[1].Value);
-        short max = short.Parse(intensityRangeRex.Match(intensityRangeStr).Groups[2].Value);
-        return new DurationRange(min, max);
+        while(!rangeRex.IsMatch(intensityRangeStr))
+            intensityRangeStr = QueryString($"Range ({min}-{max}) {(unit is null ? "" : $"in {unit}")}:", "0-100");
+        return new IntegerRange(short.Parse(rangeRex.Match(intensityRangeStr).Groups[1].Value), short.Parse(rangeRex.Match(intensityRangeStr).Groups[2].Value));
     }
 
     private static CS2Event GetTrigger()

@@ -9,32 +9,42 @@ public struct ShockerAction
 {
     public CS2Event TriggerEvent;
     // ReSharper disable thrice FieldCanBeMadeReadOnly.Global JsonDeserializer will throw a fit
-    public Shocker Shocker;
+    public int ShockerId;
     public ControlAction Action;
     public bool ValueFromInput;
+    public IntegerRange IntensityRange, DurationRange;
 
-    public ShockerAction(CS2Event trigger, Shocker shocker, ControlAction action, bool valueFromInput = false)
+    public ShockerAction(CS2Event trigger, int shockerId, ControlAction action, bool valueFromInput, IntegerRange intensityRange, IntegerRange durationRange)
     {
         this.TriggerEvent = trigger;
-        this.Shocker = shocker;
+        this.ShockerId = shockerId;
         this.Action = action;
         this.ValueFromInput = valueFromInput;
+        this.IntensityRange = intensityRange;
+        this.DurationRange = durationRange;
     }
 
-    public void Execute(CS2EventArgs cs2EventArgs)
+    public void Execute(Dictionary<int, Shocker> shockers, CS2EventArgs cs2EventArgs)
     {
-        int intensity = ValueFromInput ? IntensityFromCS2Event(cs2EventArgs) : Shocker.Api.IntensityRange.GetRandomRangeValue();
-        Shocker.Control(Action, intensity);
+        if (!shockers.ContainsKey(ShockerId))
+            return;
+        int intensity = ValueFromInput ? IntensityFromCS2Event(cs2EventArgs) : RandomValueFromRange(IntensityRange);
+        int duration = RandomValueFromRange(DurationRange);
+        shockers[ShockerId].Control(Action, intensity, duration);
+    }
+
+    private static int RandomValueFromRange(IntegerRange range)
+    {
+        return Random.Shared.Next(range.Min, range.Max);
     }
 
     private int IntensityFromCS2Event(CS2EventArgs cs2EventArgs)
     {
-        IntensityRange configuredRangeForShocker = Shocker.Api.IntensityRange;
         return TriggerEvent switch
         {
-            CS2Event.OnDamageTaken => MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100, configuredRangeForShocker.Min, configuredRangeForShocker.Max),
-            CS2Event.OnArmorChange => MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100, configuredRangeForShocker.Min, configuredRangeForShocker.Max),
-            _ => configuredRangeForShocker.GetRandomRangeValue()
+            CS2Event.OnDamageTaken => MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100, IntensityRange.Min, IntensityRange.Max),
+            CS2Event.OnArmorChange => MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100, IntensityRange.Min, IntensityRange.Max),
+            _ => RandomValueFromRange(IntensityRange)
         };
     }
 
@@ -47,7 +57,7 @@ public struct ShockerAction
     public override string ToString()
     {
         return $"Trigger Event: {Enum.GetName(typeof(CS2Event), this.TriggerEvent)}\n" +
-               $"Shocker: {string.Join(", ", Shocker)}\n" +
+               $"ShockerId: {ShockerId}\n" +
                $"Action: {Enum.GetName(typeof(ControlAction), this.Action)}\n" +
                $"ValueFromInput: {ValueFromInput}";
     }

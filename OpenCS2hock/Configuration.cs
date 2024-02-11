@@ -15,7 +15,7 @@ public struct Configuration
 
     public List<Api> Apis { get; init; }
 
-    public List<Shocker> Shockers { get; init; }
+    public Dictionary<int, Shocker> Shockers { get; init; }
 
     public Configuration()
     {

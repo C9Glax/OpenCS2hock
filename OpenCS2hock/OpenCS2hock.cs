@@ -71,6 +71,6 @@ public class OpenCS2hock
     private void EventHandler(CS2EventArgs cs2EventArgs, ShockerAction shockerAction)
     {
         this._logger?.Log(LogLevel.Information, $"Action {shockerAction}\nEventArgs: {cs2EventArgs}");
-        shockerAction.Execute(cs2EventArgs);
+        shockerAction.Execute(_configuration.Shockers, cs2EventArgs);
     }
 }
