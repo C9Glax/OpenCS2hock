@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Text.RegularExpressions;
 using CShocker.Devices.Abstract;
 using CShocker.Devices.Additional;
 using CShocker.Devices.APIs;
@@ -60,6 +62,7 @@ public static class Setup
                     AddApisWorkflow(ref c);
                     break;
                 case ConsoleKey.D3:
+                    // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop Only returning OpenShockApi Objects
                     foreach (OpenShockApi api in c.Apis.Where(a => a is OpenShockApi))
                     {
                         Configuration configuration = c;
