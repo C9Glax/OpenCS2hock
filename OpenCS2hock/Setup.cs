@@ -111,9 +111,9 @@ public static class Setup
     {
         Console.WriteLine("Select API:");
         Console.WriteLine("1) OpenShock (HTTP)");
-        Console.WriteLine("2) OpenShock (Serial)");
+        Console.WriteLine("2) OpenShock (Serial Windows Only)");
         Console.WriteLine("3) PiShock (HTTP) NotImplemented"); //TODO
-        Console.WriteLine("4) PiShock (Serial) NotImplemented"); //TODO
+        Console.WriteLine("4) PiShock (Serial Windows Only) NotImplemented"); //TODO
         char selectedChar = Console.ReadKey().KeyChar;
         int selected = 0;
         while (!int.TryParse(selectedChar.ToString(), out selected) || selected < 1 || selected > 3)
@@ -132,6 +132,8 @@ public static class Setup
                     c.Shockers.Add(c.Shockers.Any() ? c.Shockers.Keys.Max() + 1 : 0, shocker);
                 goto default;
             case 2: //OpenShock (Serial)
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    throw new PlatformNotSupportedException("Serial is only supported on Windows.");
                 apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
                 apiKey = QueryString("OpenShock API-Key:","");
                 SerialPortInfo serialPort = SelectSerialPort();
@@ -140,7 +142,11 @@ public static class Setup
                     c.Shockers.Add(c.Shockers.Any() ? c.Shockers.Keys.Max() + 1 : 0, shocker);
                 goto default;
             case 3: //PiShock (HTTP)
+                goto default;
             case 4: //PiShock (Serial)
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    throw new PlatformNotSupportedException("Serial is only supported on Windows.");
+                goto default;
             default:
                 if (api is null)
                     throw new NotImplementedException();
@@ -149,6 +155,7 @@ public static class Setup
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private static SerialPortInfo SelectSerialPort()
     {
         List<SerialPortInfo> serialPorts = SerialHelper.GetSerialPorts();
