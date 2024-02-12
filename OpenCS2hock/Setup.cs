@@ -115,8 +115,8 @@ public static class Setup
         Console.WriteLine("3) PiShock (HTTP) NotImplemented"); //TODO
         Console.WriteLine("4) PiShock (Serial Windows Only) NotImplemented"); //TODO
         char selectedChar = Console.ReadKey().KeyChar;
-        int selected = 0;
-        while (!int.TryParse(selectedChar.ToString(), out selected) || selected < 1 || selected > 3)
+        int selected;
+        while (!int.TryParse(selectedChar.ToString(), out selected) || selected < 1 || selected > 4)
             selectedChar = Console.ReadKey().KeyChar;
         Console.WriteLine();//NewLine after Input
 
@@ -159,18 +159,15 @@ public static class Setup
     private static SerialPortInfo SelectSerialPort()
     {
         List<SerialPortInfo> serialPorts = SerialHelper.GetSerialPorts();
-        
-        for(int i = 0; i < serialPorts.Count; i++)
-            Console.WriteLine($"{i}) {serialPorts[i]}");
 
-        Console.WriteLine($"Select Serial Port [0-{serialPorts.Count-1}]:");
-        string? selectedPortStr = Console.ReadLine();
-        int selectedPort = -1;
-        while (!int.TryParse(selectedPortStr, out selectedPort) || selectedPort < 0 || selectedPort > serialPorts.Count - 1)
+        int selectedPort;
+        do
         {
+            Console.Clear();
+            for(int i = 0; i < serialPorts.Count; i++)
+                Console.WriteLine($"{i}) {serialPorts[i]}");
             Console.WriteLine($"Select Serial Port [0-{serialPorts.Count-1}]:");
-            selectedPortStr = Console.ReadLine();
-        }
+        } while (!int.TryParse(Console.ReadLine(), out selectedPort) || selectedPort < 0 || selectedPort >= serialPorts.Count);
         Console.WriteLine();//NewLine after Input
 
         return serialPorts[selectedPort];
@@ -190,19 +187,63 @@ public static class Setup
 
     private static int GetShockerId(Dictionary<int, Shocker> shockersDict)
     {
-        Console.WriteLine("Select Shocker:");
         List<Shocker> shockers = shockersDict.Values.ToList();
-        for (int i = 0; i < shockers.Count; i++)
-            Console.WriteLine($"{i}) {shockers[i]}");
-        
         int selectedShockerIndex;
-        while (!int.TryParse(Console.ReadLine(), out selectedShockerIndex) || selectedShockerIndex < 0 || selectedShockerIndex > shockersDict.Count)
+        do
+        {
+            Console.Clear();
             Console.WriteLine("Select Shocker:");
+            for (int i = 0; i < shockers.Count; i++)
+                Console.WriteLine($"{i}) {shockers[i]}");
+        } while (!int.TryParse(Console.ReadLine(), out selectedShockerIndex) || selectedShockerIndex < 0 || selectedShockerIndex > shockersDict.Count);
         Console.WriteLine();//NewLine after Input
 
         Shocker shocker = shockers[selectedShockerIndex];
 
         return shockersDict.First(s => s.Value == shocker).Key;
+    }
+
+    private static IntegerRange GetIntegerRange(int min, int max, string? unit = null)
+    {
+        Regex rangeRex = new (@"([0-9]{1,5})\-([0-9]{1,5})");
+
+        string intensityRangeStr;
+        do
+        {
+            intensityRangeStr = QueryString($"Range ({min}-{max}) {(unit is null ? "" : $"in {unit}")}:", "0-100");
+        } while (!rangeRex.IsMatch(intensityRangeStr));
+        return new IntegerRange(short.Parse(rangeRex.Match(intensityRangeStr).Groups[1].Value), short.Parse(rangeRex.Match(intensityRangeStr).Groups[2].Value));
+    }
+
+    private static CS2Event GetTrigger()
+    {
+        string[] eventNames = Enum.GetNames(typeof(CS2Event));
+
+        int selectedIndex;
+        do
+        {
+            Console.Clear();
+            Console.WriteLine("Select CS2 Trigger-Event:");
+            for (int i = 0; i < eventNames.Length; i++)
+                Console.WriteLine($"{i}) {eventNames[i]}");
+        } while (!int.TryParse(Console.ReadLine(), out selectedIndex) || selectedIndex < 0 || selectedIndex >= eventNames.Length);
+
+        return Enum.Parse<CS2Event>(eventNames[selectedIndex]);
+    }
+
+    private static ControlAction GetControlAction()
+    {
+        string[] actionNames = Enum.GetNames(typeof(ControlAction));
+        int selectedIndex;
+        do
+        {
+            Console.Clear();
+            Console.WriteLine("Select Action:");
+            for (int i = 0; i < actionNames.Length; i++)
+                Console.WriteLine($"{i}) {actionNames[i]}");
+        } while (!int.TryParse(Console.ReadLine(), out selectedIndex) || selectedIndex < 0 || selectedIndex >= actionNames.Length);
+
+        return Enum.Parse<ControlAction>(actionNames[selectedIndex]);
     }
 
     private static bool QueryBool(string queryString, bool defaultResult)
@@ -218,42 +259,5 @@ public static class Setup
         Console.WriteLine(queryString);
         string? userInput = Console.ReadLine();
         return userInput?.Length > 0 ? userInput : defaultResult;
-    }
-
-    private static IntegerRange GetIntegerRange(int min, int max, string? unit = null)
-    {
-        Regex rangeRex = new (@"([0-9]{1,5})\-([0-9]{1,5})");
-        string intensityRangeStr = "";
-        while(!rangeRex.IsMatch(intensityRangeStr))
-            intensityRangeStr = QueryString($"Range ({min}-{max}) {(unit is null ? "" : $"in {unit}")}:", "0-100");
-        return new IntegerRange(short.Parse(rangeRex.Match(intensityRangeStr).Groups[1].Value), short.Parse(rangeRex.Match(intensityRangeStr).Groups[2].Value));
-    }
-
-    private static CS2Event GetTrigger()
-    {
-        string[] names = Enum.GetNames(typeof(CS2Event));
-        Console.WriteLine("Select CS2 Trigger-Event:");
-        for (int i = 0; i < names.Length; i++)
-            Console.WriteLine($"{i}) {names[i]}");
-
-        int selectedIndex;
-        while (!int.TryParse(Console.ReadLine(), out selectedIndex))
-            Console.WriteLine("Select CS2 Trigger-Event:");
-
-        return Enum.Parse<CS2Event>(names[selectedIndex]);
-    }
-
-    private static ControlAction GetControlAction()
-    {
-        string[] names = Enum.GetNames(typeof(ControlAction));
-        Console.WriteLine("Select Action:");
-        for (int i = 0; i < names.Length; i++)
-            Console.WriteLine($"{i}) {names[i]}");
-
-        int selectedIndex;
-        while (!int.TryParse(Console.ReadLine(), out selectedIndex))
-            Console.WriteLine("Select Action:");
-
-        return Enum.Parse<ControlAction>(names[selectedIndex]);
     }
 }
