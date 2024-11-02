@@ -8,11 +8,11 @@ namespace OpenCS2hock;
 public struct ShockerAction
 {
     public CS2Event TriggerEvent;
-    // ReSharper disable thrice FieldCanBeMadeReadOnly.Global JsonDeserializer will throw a fit
-    public int ShockerId;
-    public ControlAction Action;
-    public bool ValueFromInput;
-    public IntegerRange IntensityRange, DurationRange;
+    // ReSharper disable MemberCanBePrivate.Global -> exposed
+    public readonly int ShockerId;
+    public readonly ControlAction Action;
+    public readonly bool ValueFromInput;
+    public readonly IntegerRange IntensityRange, DurationRange;
 
     public ShockerAction(CS2Event trigger, int shockerId, ControlAction action, bool valueFromInput, IntegerRange intensityRange, IntegerRange durationRange)
     {
@@ -28,14 +28,9 @@ public struct ShockerAction
     {
         if (!shockers.ContainsKey(ShockerId))
             return;
-        int intensity = ValueFromInput ? IntensityFromCS2Event(cs2EventArgs) : RandomValueFromRange(IntensityRange);
-        int duration = RandomValueFromRange(DurationRange);
+        int intensity = ValueFromInput ? IntensityFromCS2Event(cs2EventArgs) : IntensityRange.RandomValueWithinLimits();
+        int duration = DurationRange.RandomValueWithinLimits();
         shockers[ShockerId].Control(Action, intensity, duration);
-    }
-
-    private static int RandomValueFromRange(IntegerRange range)
-    {
-        return Random.Shared.Next(range.Min, range.Max);
     }
 
     private int IntensityFromCS2Event(CS2EventArgs cs2EventArgs)
@@ -44,7 +39,7 @@ public struct ShockerAction
         {
             CS2Event.OnDamageTaken => MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100, IntensityRange.Min, IntensityRange.Max),
             CS2Event.OnArmorChange => MapInt(cs2EventArgs.ValueAsOrDefault<int>(), 0, 100, IntensityRange.Min, IntensityRange.Max),
-            _ => RandomValueFromRange(IntensityRange)
+            _ => IntensityRange.RandomValueWithinLimits()
         };
     }
 
