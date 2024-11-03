@@ -125,7 +125,7 @@ public static class Setup
         switch (selected)
         {
             case 1: //OpenShock (HTTP)
-                apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
+                apiUri = QueryString($"OpenShock API-Endpoint ({OpenShockApi.DefaultEndpoint}):", OpenShockApi.DefaultEndpoint);
                 apiKey = QueryString("OpenShock API-Key:","");
                 api = new OpenShockHttp(apiKey, apiUri);
                 foreach(OpenShockShocker shocker in ((OpenShockHttp)api).GetShockers())
@@ -134,7 +134,7 @@ public static class Setup
             case 2: //OpenShock (Serial)
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     throw new PlatformNotSupportedException("Serial is only supported on Windows.");
-                apiUri = QueryString("OpenShock API-Endpoint (https://api.shocklink.net):", "https://api.shocklink.net");
+                apiUri = QueryString($"OpenShock API-Endpoint ({OpenShockApi.DefaultEndpoint}):", OpenShockApi.DefaultEndpoint);
                 apiKey = QueryString("OpenShock API-Key:","");
                 SerialPortInfo serialPort = SelectSerialPort();
                 api = new OpenShockSerial(serialPort, apiKey, apiUri);

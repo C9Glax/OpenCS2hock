@@ -10,9 +10,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CS2GSI" Version="1.0.7" />
-      <PackageReference Include="CShocker" Version="2.4.0" />
-      <PackageReference Include="GlaxLogger" Version="1.0.6" />
+      <PackageReference Include="CS2GSI" Version="1.0.8" />
+      <PackageReference Include="CShocker" Version="2.5.1" />
+      <PackageReference Include="GlaxLogger" Version="1.0.7.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 

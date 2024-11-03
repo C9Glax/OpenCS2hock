@@ -9,10 +9,10 @@ public struct ShockerAction
 {
     public CS2Event TriggerEvent;
     // ReSharper disable MemberCanBePrivate.Global -> exposed
-    public readonly int ShockerId;
-    public readonly ControlAction Action;
-    public readonly bool ValueFromInput;
-    public readonly IntegerRange IntensityRange, DurationRange;
+    public int ShockerId;
+    public ControlAction Action;
+    public bool ValueFromInput;
+    public IntegerRange IntensityRange, DurationRange;
 
     public ShockerAction(CS2Event trigger, int shockerId, ControlAction action, bool valueFromInput, IntegerRange intensityRange, IntegerRange durationRange)
     {
