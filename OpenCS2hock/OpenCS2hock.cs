@@ -61,8 +61,9 @@ public class OpenCS2hock
                     case CS2Event.OnBombPlanted: this._cs2GSI.OnBombPlanted += args => EventHandler(args, shockerAction); break;
                     case CS2Event.OnBombDefused: this._cs2GSI.OnBombDefused += args => EventHandler(args, shockerAction); break;
                     case CS2Event.OnBombExploded: this._cs2GSI.OnBombExploded += args => EventHandler(args, shockerAction); break;
-                    case CS2Event.AnyEvent: this._cs2GSI.AnyEvent += args => EventHandler(args, shockerAction); break;
-                    case CS2Event.AnyMessage: this._cs2GSI.AnyMessage += args => EventHandler(args, shockerAction); break;
+                    case CS2Event.AnyEvent: this._cs2GSI.OnAnyEvent += args => EventHandler(args, shockerAction); break;
+                    case CS2Event.AnyMessage: this._cs2GSI.OnAnyMessage += args => EventHandler(args, shockerAction); break;
+                    case CS2Event.OnActivityChange: this._cs2GSI.OnActivityChange += args => EventHandler(args, shockerAction); break;
                     default: this._logger?.Log(LogLevel.Debug, $"CS2Event {nameof(shockerAction.TriggerEvent)} unknown."); break;
                 }
         }
