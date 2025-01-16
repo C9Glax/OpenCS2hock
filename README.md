@@ -26,7 +26,7 @@ Example `config.json`. Place next to executable. Will also be generated on first
         "Max": 1000
       },
       "ApiType": 0,
-      "Endpoint": "https://api.shocklink.net",
+      "Endpoint": "https://api.shocklink.app",
       "ApiKey": "API KEY HERE"
     }
   ],
